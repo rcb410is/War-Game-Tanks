@@ -94,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
                     radiusIndicator.position = new Vector3(0, -30, 0);
                     point.position = new Vector3 (0, -10, 0);
                 }
-                else if (hit.collider.CompareTag("Player"))
+                else if (hit.collider.CompareTag("Player") && hit.collider.CompareTag("Button"))
                 {
                     selected = false;
                     //Debug.Log("Selected other tank");
