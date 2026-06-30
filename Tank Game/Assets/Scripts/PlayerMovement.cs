@@ -14,7 +14,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed = 50f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
-    [SerializeField] float yOffset = 0;
     Vector3 targetPos;
     float posStep;
     bool selected;
@@ -27,11 +26,11 @@ public class PlayerMovement : MonoBehaviour
         radiusIndicator = Instantiate(radiusIndicator, new Vector3 (0, -50, 0), Quaternion.identity);
     }
 
-    //Rotates the object towards a point
+    //Rotates the tank towards a point
     void Rotation(Vector3 targetDirection)
     {
         targetDirection = targetPos - player.position;
-        targetDirection.y = 0f; //targetDirection.y;
+        targetDirection.y = 0f;
 
         if (Quaternion.Angle(player.rotation, Quaternion.LookRotation(targetDirection)) > 5f && (Mathf.Abs(targetDirection.x) > 2f && Mathf.Abs(targetDirection.z) > 2f))
         {
@@ -42,12 +41,12 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    //Moves the object towards a point
+    //Moves the tank towards a point
     void Move(Vector3 targetDirection)
     {
 
         targetDirection = targetPos - player.position;
-        targetDirection.y = 0f; //player.position.y;
+        targetDirection.y = 0f;
 
         if (Quaternion.Angle(player.rotation, Quaternion.LookRotation(targetDirection)) <= 5f)
         {
@@ -78,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
             //LayerMask layerMask = LayerMask.GetMask("UI");
 
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit/*, 500.0f, layerMask*/))
+            if (Physics.Raycast(rayOrigin, out RaycastHit hit))
             {
                 if (hit.collider.Equals(playerCol) && !selected) {
                     selected = true;
@@ -94,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
                     radiusIndicator.position = new Vector3(0, -30, 0);
                     point.position = new Vector3 (0, -10, 0);
                 }
-                else if (hit.collider.CompareTag("Player") && hit.collider.CompareTag("Button"))
+                else if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Button"))
                 {
                     selected = false;
                     //Debug.Log("Selected other tank");
@@ -126,7 +125,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 Rotation(targetDirection);
                 Move(targetDirection);
-                Debug.Log("Rotating... " + player.transform.position + " " + targetPos + " " + targetDirection);
+                //Debug.Log("Rotating... " + player.transform.position + " " + targetPos + " " + targetDirection);
             }
 
         }

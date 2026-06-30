@@ -57,7 +57,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalPosition.z
@@ -65,19 +65,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.8814084
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0.26561686
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.37398544
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0.112702414
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -91,9 +91,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8376190896628517779, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: -4222539545588996364, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_Name
       value: KV2
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_TagString
@@ -217,7 +229,6 @@ MonoBehaviour:
   speed: 50
   rotMaxRad: 3
   rotMaxMag: 0.1
-  yOffset: 0
 --- !u!4 &4199374035126574993 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
