@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 5562148165746662146}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 103, z: 151}
+  m_LocalPosition: {x: 0, y: 103, z: 157.7}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -53,7 +53,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -93.06986
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalPosition.y
@@ -61,23 +61,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 21.17218
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8814084
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.26561686
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.37398544
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.112702414
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -155,6 +155,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1253274563501086440}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5839125635252091770}
   m_SourcePrefab: {fileID: 100100000, guid: b204e115db8cbc84daffd37d7dc8b021, type: 3}
 --- !u!1 &3534477722296747307 stripped
 GameObject:
@@ -207,8 +210,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 136.94424, y: 134.69638, z: 289.32297}
-  m_Center: {x: 0.05129814, y: 66.10788, z: 4.201622}
+  m_Size: {x: 136.94424, y: 134.69638, z: 279.10416}
+  m_Center: {x: 0.05129814, y: 66.10788, z: -0.90794086}
 --- !u!114 &1253274563501086440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,12 +224,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 29995aa5a0813e74fa1d67c5f401202a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  player: {fileID: 4199374035126574993}
-  point: {fileID: 7419418598261885694, guid: e3eb553baa91f694aa14691fd6746702, type: 3}
-  selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}
-  radiusIndicator: {fileID: 8563436912117783394, guid: 6b176555846ec54448ca77ab34f39bbc, type: 3}
+  player: {fileID: 3534477722296747307}
   playerCol: {fileID: 3373263362281426577}
+  selectionHandler: {fileID: 3136386613465526120, guid: 4cfaef6b7dd07444db8861c9e388267d, type: 3}
   speed: 50
+  rotMaxRad: 3
+  rotMaxMag: 0.1
+--- !u!114 &5839125635252091770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3534477722296747307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d276b9c5722cab543901c2ea70d0dfb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShootBullet
+  selectionHandler: {fileID: 3136386613465526120, guid: 4cfaef6b7dd07444db8861c9e388267d, type: 3}
+  player: {fileID: 3534477722296747307}
+  bullet: {fileID: 5713787573138977129, guid: 119eb99141b8d9341b36d8bfc583d018, type: 3}
+  tankBarrel: {fileID: 5405230927040948997}
+  selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}
+  bulletSpeed: 6000
+  shotArmTime: 0.5
   rotMaxRad: 3
   rotMaxMag: 0.1
 --- !u!4 &4199374035126574993 stripped

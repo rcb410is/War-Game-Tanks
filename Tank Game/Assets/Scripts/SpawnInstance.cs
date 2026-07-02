@@ -7,13 +7,16 @@ public class SpawnInstance : MonoBehaviour
 
     public static GameObject tank;
     public static GameObject selectionIndicator;
+    [SerializeField] Button spawnButton;
     public static Text buttonText;
-    public static bool spawnActivated = false;
+    public static bool isSpawnActivated = false;
+    public static bool canInteractWithButtons = true;
 
     public void SpawnTank(GameObject newTank)
     {
         tank = newTank;
-        spawnActivated = true;
+        isSpawnActivated = true;
+        canInteractWithButtons = false;
     }
 
     public void SpawnSelection(GameObject newSelectionIndicator)
@@ -30,18 +33,28 @@ public class SpawnInstance : MonoBehaviour
 
     void Update()
     {
+        if (!canInteractWithButtons)
+        {
+            spawnButton.interactable = false;
+        }
+        else
+        {
+            spawnButton.interactable = canInteractWithButtons;
+        }
+
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-        if (Physics.Raycast(rayOrigin, out RaycastHit hit) && hit.collider.CompareTag("Ground") && spawnActivated)
+        if (Physics.Raycast(rayOrigin, out RaycastHit hit) && hit.collider.CompareTag("Ground") && isSpawnActivated)
         {
             selectionIndicator.transform.position = hit.point;
         }
 
-        if (spawnActivated && Keyboard.current.eKey.isPressed)
+        if (isSpawnActivated && Keyboard.current.eKey.isPressed)
         {
             Debug.Log("Preparing to spawn");
             Instantiate(tank, hit.point, Quaternion.identity);
-            spawnActivated = false;
+            isSpawnActivated = false;
+            canInteractWithButtons = true;
             buttonText.text = tank.name;
             selectionIndicator.transform.position = new Vector3(0, -45, 0);
         }
