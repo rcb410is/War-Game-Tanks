@@ -4,12 +4,12 @@ using UnityEngine.InputSystem;
 public class SelectionHandler : MonoBehaviour
 {
 
-    static GameObject player;
+    static GameObject tank;
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] Transform radiusIndicator;
     static bool isSelected;
-    bool wasInitialSelectionMade;
+    bool initialSelectionWasMade;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,7 +25,7 @@ public class SelectionHandler : MonoBehaviour
 
     public Transform GetRadiusIndicator() { return radiusIndicator; }
 
-    public GameObject GetPlayer() { return player; }
+    public GameObject GetPlayer() { return tank; }
 
     public bool IsSelected() { return isSelected; }
     
@@ -37,10 +37,10 @@ public class SelectionHandler : MonoBehaviour
         if (Physics.Raycast(rayOrigin, out RaycastHit hit) && Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (hit.collider.CompareTag("Player")) {
-                player = hit.collider.gameObject;
-                wasInitialSelectionMade = true;
+                tank = hit.collider.gameObject;
+                initialSelectionWasMade = true;
                 isSelected = true;
-                Debug.Log("First tank selected");
+                //Debug.Log("First tank selected");
             }
         }
         return isSelected;
@@ -55,14 +55,14 @@ public class SelectionHandler : MonoBehaviour
 
             if (Physics.Raycast(rayOrigin, out RaycastHit hit))
             {
-                if (hit.collider.Equals(player.GetComponent<Collider>()) && !isSelected)
+                if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isSelected)
                 {
                     isSelected = true;
                     //Debug.Log("Selected " + player);
-                    selectionIndicator.position = player.transform.position;
-                    radiusIndicator.position = player.transform.position;
+                    selectionIndicator.position = tank.transform.position;
+                    radiusIndicator.position = tank.transform.position;
                 }
-                else if (hit.collider.Equals(player.GetComponent<Collider>()) && isSelected)
+                else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isSelected)
                 {
                     isSelected = false;
                     //Debug.Log("Deselected " + player);
@@ -73,10 +73,10 @@ public class SelectionHandler : MonoBehaviour
                 else if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Button"))
                 {
                     isSelected = true;
-                    player = hit.collider.gameObject;
+                    tank = hit.collider.gameObject;
                     //Debug.Log("Selected other tank");
-                    selectionIndicator.position = player.transform.position;
-                    radiusIndicator.position = player.transform.position;
+                    selectionIndicator.position = tank.transform.position;
+                    radiusIndicator.position = tank.transform.position;
                     pointer.position = new Vector3(0, -10, 0);
                 }
                 else
@@ -106,20 +106,25 @@ public class SelectionHandler : MonoBehaviour
 
         }
 
-        if (!wasInitialSelectionMade)
+        if (!initialSelectionWasMade)
         {
             isSelected = SelectFirstTank();
+        }
+        else if (tank.GetComponent<ShootBullet>().IsAimReady())
+        {
+            radiusIndicator.position = new Vector3(0, -30, 0);
+            selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
+            //Debug.Log("Can't select, tank is in shoot mode");
         }
         else
         {
             isSelected = SelectTank();
         }
 
-        if (isSelected)
+        if (isSelected && !tank.GetComponent<ShootBullet>().IsAimReady())
         {
-            selectionIndicator.rotation = player.transform.rotation;
-            selectionIndicator.position = player.transform.position;
-            radiusIndicator.position = player.transform.position;
+            selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
+            radiusIndicator.position = tank.transform.position;
         }
     }
 

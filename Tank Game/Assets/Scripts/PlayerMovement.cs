@@ -3,8 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] GameObject player;
-    [SerializeField] Collider playerCol;
+    [SerializeField] GameObject tank;
     [SerializeField] SelectionHandler selectionHandler;
     
     [SerializeField] float speed = 50f;
@@ -22,13 +21,13 @@ public class PlayerMovement : MonoBehaviour
     //Rotates the tank towards a point
     void Rotate(Vector3 targetDirection)
     {
-        targetDirection = targetPos - player.transform.position;
+        targetDirection = targetPos - tank.transform.position;
         targetDirection.y = 0f;
 
-        if (Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(targetDirection)) > 5f && (Mathf.Abs(targetDirection.x) > 2f && Mathf.Abs(targetDirection.z) > 2f))
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 5f && (Mathf.Abs(targetDirection.x) > 2f && Mathf.Abs(targetDirection.z) > 2f))
         {
-            Vector3 newDirection = Vector3.RotateTowards(player.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
-            player.transform.rotation = Quaternion.LookRotation(newDirection);
+            Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
+            tank.transform.rotation = Quaternion.LookRotation(newDirection);
         }
     }
 
@@ -36,13 +35,13 @@ public class PlayerMovement : MonoBehaviour
     void Move(Vector3 targetDirection)
     {
 
-        targetDirection = targetPos - player.transform.position;
+        targetDirection = targetPos - tank.transform.position;
         targetDirection.y = 0f;
 
-        if (Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(targetDirection)) <= 5f)
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) <= 5f)
         {
             posStep = speed * Time.deltaTime;
-            player.transform.position = Vector3.MoveTowards(player.transform.position, targetPos, posStep);
+            tank.transform.position = Vector3.MoveTowards(tank.transform.position, targetPos, posStep);
         }
 
     }
@@ -61,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         isSelected = selectionHandler.IsSelected();
-        isCurrentTank = player == selectionHandler.GetPlayer();
+        isCurrentTank = tank == selectionHandler.GetPlayer();
         //Debug.Log("Selected: " + selected);
         //Debug.Log("This tank selected: " +  currentTank);
         if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -69,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
 
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit))
+            if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsAimReady())
             {
                 if (hit.collider.CompareTag("Ground") && isSelected && isCurrentTank)
                 {
@@ -79,9 +78,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        Vector3 targetDirection = targetPos - player.transform.position;
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 targetDirection = targetPos - tank.transform.position;
         float targetRadius = Mathf.Sqrt(Mathf.Pow(targetDirection.x, 2) + Mathf.Pow(targetDirection.z, 2));
-        if (isSelected && targetRadius <= 50 && isCurrentTank)
+        if (targetRadius <= 50)
         {
             if (isMoving)
             {
@@ -95,7 +98,6 @@ public class PlayerMovement : MonoBehaviour
         {
             isMoving = false;
         }
-
     }
 
 }

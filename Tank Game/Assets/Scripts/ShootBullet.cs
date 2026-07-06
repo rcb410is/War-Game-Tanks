@@ -5,11 +5,11 @@ using UnityEngine.UI;
 public class ShootBullet : MonoBehaviour
 {
     [SerializeField] SelectionHandler selectionHandler;
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject tank;
     [SerializeField] GameObject bullet;
     [SerializeField] Transform tankBarrel;
     [SerializeField] Transform selectionIndicator;
-    [SerializeField] float bulletSpeed = 2000;
+    [SerializeField] float bulletSpeed = 6000;
     [SerializeField] float shotArmTime = 0.5f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
@@ -17,12 +17,14 @@ public class ShootBullet : MonoBehaviour
     public static bool isSelected;
     public static bool isAimReady;
     bool isCurrentTank;
-    bool isShotReady = false;
+    bool isShotReady;
     bool isRotating;
+    Vector3 targetPos;
     Vector3 targetDirection;
     Vector3 targetAim;
-    Vector3 targetPos;
     RaycastHit hit;
+
+    public bool IsAimReady() {  return isAimReady; }
 
     public void WaitForShot()
     {
@@ -44,11 +46,11 @@ public class ShootBullet : MonoBehaviour
 
      void Rotation(Vector3 targetDirection)
     {
-        targetDirection = targetPos - player.transform.position;
-        if (Quaternion.Angle(player.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f)
+        targetDirection = targetPos - tank.transform.position;
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f)
         {
-            Vector3 newDirection = Vector3.RotateTowards(player.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
-            player.transform.rotation = Quaternion.LookRotation(newDirection);
+            Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
+            tank.transform.rotation = Quaternion.LookRotation(newDirection);
             selectionIndicator.rotation = Quaternion.LookRotation(newDirection);
         }
         else
@@ -61,13 +63,16 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        if ((hit.collider.CompareTag("Player") && hit.collider.name != player.name) || hit.collider.CompareTag("Ground"))
+        if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
         {
             targetAim = targetPos - tankBarrel.position;
             bullet = Instantiate(bullet, tankBarrel.position, tankBarrel.rotation);
             bullet.transform.forward = targetAim.normalized;
             bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
+            var particle = tank.GetComponent<ParticleSystem>();
+            particle.Play();
             buttonText.text = "SHOOT";
+            tank.GetComponent<PlayerMovement>().enabled = true;
             //Debug.Log("Shot complete");
         }
     }
@@ -77,30 +82,36 @@ public class ShootBullet : MonoBehaviour
     {
         //Debug.Log($"{aimReady}");
         isSelected = selectionHandler.IsSelected();
-        isCurrentTank = player == selectionHandler.GetPlayer();
+        isCurrentTank = tank == selectionHandler.GetPlayer();
         //Debug.Log("Selected: " + selected);
         if (!isSelected && isAimReady)
         {
             isAimReady = false;
             buttonText.text = "SHOOT";
+            tank.GetComponent<PlayerMovement>().enabled = true;
         }
-        if (Mouse.current.leftButton.wasPressedThisFrame && isAimReady && isCurrentTank)
+        if (Mouse.current.leftButton.wasPressedThisFrame && isAimReady && isCurrentTank && !isRotating && !isShotReady)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
             Physics.Raycast(rayOrigin, out hit);
             //Debug.Log("Mouse position read");
 
-            if ((hit.collider.CompareTag("Player") && hit.collider.name != player.name) || hit.collider.CompareTag("Ground"))
+            if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
             {
                 targetPos = hit.point;
                 targetDirection = targetPos - tankBarrel.position;
                 isRotating = true;
+                tank.GetComponent<PlayerMovement>().enabled = false;
                 //Debug.Log("Ready to rotate");
             }
                       
         }
 
+    }
+
+    private void FixedUpdate()
+    {
         if (isRotating && isSelected && isCurrentTank)
         {
             //Debug.Log("Rotating");
@@ -124,8 +135,8 @@ public class ShootBullet : MonoBehaviour
             isRotating = false;
             isShotReady = false;
             isAimReady = false;
+            tank.GetComponent<PlayerMovement>().enabled = true;
         }
-
     }
 
 }

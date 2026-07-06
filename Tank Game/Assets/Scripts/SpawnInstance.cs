@@ -28,7 +28,7 @@ public class SpawnInstance : MonoBehaviour
     public void AssignText(Text currentButtonText)
     {
         buttonText = currentButtonText;
-        buttonText.text = "Press 'E' to Confirm";
+        buttonText.text = "Click to confirm";
     }
 
     void Update()
@@ -49,10 +49,10 @@ public class SpawnInstance : MonoBehaviour
             selectionIndicator.transform.position = hit.point;
         }
 
-        if (isSpawnActivated && Keyboard.current.eKey.isPressed)
+        if (isSpawnActivated && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Debug.Log("Preparing to spawn");
-            Instantiate(tank, hit.point, Quaternion.identity);
+            //Debug.Log("Preparing to spawn");
+            Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
             isSpawnActivated = false;
             canInteractWithButtons = true;
             buttonText.text = tank.name;
