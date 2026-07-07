@@ -1,11 +1,7 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-public class ButtonHandler : MonoBehaviour
+public class DamageHandler : MonoBehaviour
 {
-
-    //public Button button;
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

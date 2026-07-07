@@ -6,13 +6,15 @@ public class ShootBullet : MonoBehaviour
 {
     [SerializeField] SelectionHandler selectionHandler;
     [SerializeField] GameObject tank;
-    [SerializeField] GameObject bullet;
-    [SerializeField] Transform tankBarrel;
+    [SerializeField] GameObject bulletPrefab;
+    [SerializeField] GameObject tankBarrel;
     [SerializeField] Transform selectionIndicator;
+    [SerializeField] AudioClip clip;
     [SerializeField] float bulletSpeed = 6000;
     [SerializeField] float shotArmTime = 0.5f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
+    public GameObject bullet;
     public static Text buttonText;
     public static bool isSelected;
     public static bool isAimReady;
@@ -44,7 +46,7 @@ public class ShootBullet : MonoBehaviour
         buttonText.text = "Click to shoot";
     }
 
-     void Rotation(Vector3 targetDirection)
+    void Rotation(Vector3 targetDirection)
     {
         targetDirection = targetPos - tank.transform.position;
         if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f)
@@ -65,13 +67,16 @@ public class ShootBullet : MonoBehaviour
     {
         if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
         {
-            targetAim = targetPos - tankBarrel.position;
-            bullet = Instantiate(bullet, tankBarrel.position, tankBarrel.rotation);
+            targetAim = targetPos - tankBarrel.transform.position;
+            bullet = bulletPrefab.GetComponent<BulletHandler>().GetBullet();
+            bullet.transform.position = tankBarrel.transform.position;
+            bullet.transform.rotation = tankBarrel.transform.rotation;
             bullet.transform.forward = targetAim.normalized;
             bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
             var particle = tank.GetComponent<ParticleSystem>();
             particle.Play();
             buttonText.text = "SHOOT";
+            tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
             tank.GetComponent<PlayerMovement>().enabled = true;
             //Debug.Log("Shot complete");
         }
@@ -100,7 +105,7 @@ public class ShootBullet : MonoBehaviour
             if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
             {
                 targetPos = hit.point;
-                targetDirection = targetPos - tankBarrel.position;
+                targetDirection = targetPos - tankBarrel.transform.position;
                 isRotating = true;
                 tank.GetComponent<PlayerMovement>().enabled = false;
                 //Debug.Log("Ready to rotate");
