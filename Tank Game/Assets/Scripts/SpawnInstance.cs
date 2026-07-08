@@ -7,6 +7,8 @@ public class SpawnInstance : MonoBehaviour
 
     public static GameObject tank;
     public static GameObject selectionIndicator;
+    
+    [SerializeField] Transform tanksParent;
     [SerializeField] Button spawnButton;
     public static Text buttonText;
     public static bool isSpawnActivated = false;
@@ -52,7 +54,8 @@ public class SpawnInstance : MonoBehaviour
         if (isSpawnActivated && Mouse.current.leftButton.wasPressedThisFrame)
         {
             //Debug.Log("Preparing to spawn");
-            Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
+            var created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
+            created.transform.SetParent(tanksParent);
             isSpawnActivated = false;
             canInteractWithButtons = true;
             buttonText.text = tank.name;

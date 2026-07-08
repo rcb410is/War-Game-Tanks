@@ -5,8 +5,8 @@ using UnityEngine.UI;
 public class ShootBullet : MonoBehaviour
 {
     [SerializeField] SelectionHandler selectionHandler;
+    [SerializeField] BulletPoolHandler bulletPoolHandler;
     [SerializeField] GameObject tank;
-    [SerializeField] GameObject bulletPrefab;
     [SerializeField] GameObject tankBarrel;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] AudioClip clip;
@@ -68,9 +68,8 @@ public class ShootBullet : MonoBehaviour
         if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
         {
             targetAim = targetPos - tankBarrel.transform.position;
-            bullet = bulletPrefab.GetComponent<BulletHandler>().GetBullet();
-            bullet.transform.position = tankBarrel.transform.position;
-            bullet.transform.rotation = tankBarrel.transform.rotation;
+            bullet = bulletPoolHandler.GetComponent<BulletPoolHandler>().GetBullet();
+            bullet.transform.SetPositionAndRotation(tankBarrel.transform.position, tankBarrel.transform.rotation);
             bullet.transform.forward = targetAim.normalized;
             bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
             var particle = tank.GetComponent<ParticleSystem>();

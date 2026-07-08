@@ -1,19 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletHandler : MonoBehaviour
+public class BulletPoolHandler : MonoBehaviour
 {
 
     [SerializeField] GameObject bulletPrefab;
+    [SerializeField] Transform bulletsParent;
     public int poolSize = 20;
 
-    private Queue<GameObject> pool = new();
+    private static Queue<GameObject> pool = new();
 
     private void Start()
     {
         for (int i = 0; i < poolSize; i++)
         {
             GameObject bullet = Instantiate(bulletPrefab);
+            bullet.transform.SetParent(bulletsParent.transform);
             bullet.SetActive(false);
             pool.Enqueue(bullet);
         }
@@ -26,11 +28,14 @@ public class BulletHandler : MonoBehaviour
         {
             GameObject bullet = pool.Dequeue();
             bullet.SetActive(true);
+            bullet.gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
             return bullet;
         }
         else
         {
+            Debug.Log("Need to expand bullet pool");
             GameObject bullet = Instantiate(bulletPrefab);
+            //bullet.transform.SetParent(bulletsParent.transform);
             bullet.SetActive(true);
             return bullet;
         }
@@ -42,9 +47,12 @@ public class BulletHandler : MonoBehaviour
         pool.Enqueue(bullet);
     }
 
+    /*
     private void OnCollisionEnter(Collision collision)
     {
+        gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         ReturnBullet(gameObject);
     }
+    */
 
 }
