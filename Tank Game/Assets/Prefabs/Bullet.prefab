@@ -191,6 +191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   bullet: {fileID: 5713787573138977129}
+  bulletImpactSound: {fileID: 8300000, guid: d0316606b5bb7f7449cedc746ee19294, type: 3}
   bulletModel: {fileID: 4869237234117289982}
   bulletPoolHandler: {fileID: 526884149692617139, guid: 33769d393b43440409d1d81034a4e9b8, type: 3}
 --- !u!82 &4933874356221941497

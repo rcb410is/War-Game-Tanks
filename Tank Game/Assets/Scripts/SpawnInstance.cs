@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-
+public enum TanksTypes
+{
+    _9TP, _KV2
+}
 public class SpawnInstance : MonoBehaviour
 {
 
@@ -10,9 +14,35 @@ public class SpawnInstance : MonoBehaviour
     
     [SerializeField] Transform tanksParent;
     [SerializeField] Button spawnButton;
+    [SerializeField] TanksTypes targetedSpawnType;
     public static Text buttonText;
     public static bool isSpawnActivated = false;
     public static bool canInteractWithButtons = true;
+    public int poolSize = 10;
+
+    static Queue<GameObject> pool = new();
+
+    /*
+    void Start()
+    {
+        for (int i = 0; i < poolSize; i++)
+        {
+            //GameObject created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
+            GameObject created = Instantiate(tank);
+            created.transform.SetParent(tanksParent.transform);
+            created.SetActive(false);
+            pool.Enqueue(created);
+        }
+    }
+    */
+
+    public void ReturnTank(GameObject tank)
+    {
+        tank.SetActive(false);
+        pool.Enqueue(tank);
+    }
+
+    public bool IsSpawnActivated() { return isSpawnActivated; }
 
     public void SpawnTank(GameObject newTank)
     {
@@ -53,9 +83,36 @@ public class SpawnInstance : MonoBehaviour
 
         if (isSpawnActivated && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            //Debug.Log("Preparing to spawn");
-            var created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
-            created.transform.SetParent(tanksParent);
+            if (pool.Count > 0)
+            {
+                GameObject queuedTank = pool.Dequeue();
+                var playerMovement = queuedTank.GetComponent<PlayerMovement>();
+                var tankType = playerMovement.TankType;
+                Debug.Log($"[{name}]: Pool count above 0 {tankType} {targetedSpawnType}");
+                if (tankType != targetedSpawnType)
+                {
+                    pool.Enqueue(queuedTank);
+                    Debug.Log("Not a match, requeued tank");
+
+                }
+                else
+                {
+                    var created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
+                    created.transform.SetParent(tanksParent);
+                    queuedTank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                    queuedTank.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
+                    queuedTank.SetActive(true);
+                }
+
+            }
+            else
+            {
+                var created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
+                created.transform.SetParent(tanksParent);
+                created.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                created.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
+                created.SetActive(true);
+            }
             isSpawnActivated = false;
             canInteractWithButtons = true;
             buttonText.text = tank.name;

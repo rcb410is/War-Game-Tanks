@@ -1,16 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DamageHandler : MonoBehaviour
 {
 
+    [SerializeField] GameObject spawnInstance;
     [SerializeField] GameObject tank;
     [SerializeField] int tankHealth = 2;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
     void OnCollisionEnter(Collision collision)
     {
@@ -22,20 +18,11 @@ public class DamageHandler : MonoBehaviour
         if (tankHealth <= 0)
         {
             Debug.Log($"{tank.name} was destroyed");
-            tank.GetComponent<Rigidbody>().AddForce(0, 20000, 0);
+            tankHealth = 2;
+            tank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            spawnInstance.GetComponentInChildren<SpawnInstance>().ReturnTank(tank);
+            //tank.GetComponent<Rigidbody>().AddForce(0, 20000, 0);
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        /*
-        if (tankHealth <= 0)
-        {
-            Debug.Log($"{tank.name} was destroyed");
-            tank.GetComponent<Rigidbody>().AddForce(0, 4000 * Time.deltaTime, 0);
-        }
-        */
     }
 
 }

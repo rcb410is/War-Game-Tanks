@@ -4,6 +4,7 @@ public class BulletCollision : MonoBehaviour
 {
 
     [SerializeField] GameObject bullet;
+    [SerializeField] AudioClip bulletImpactSound;
     [SerializeField] MeshRenderer bulletModel;
     [SerializeField] BulletPoolHandler bulletPoolHandler;
 
@@ -18,6 +19,7 @@ public class BulletCollision : MonoBehaviour
     {
         var particle = bullet.GetComponent<ParticleSystem>();
         particle.Play();
+        bullet.GetComponent<AudioSource>().PlayOneShot(bulletImpactSound);
         bulletModel.GetComponent<MeshRenderer>().enabled = false;
         bullet.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         bullet.GetComponent<Collider>().enabled = false;

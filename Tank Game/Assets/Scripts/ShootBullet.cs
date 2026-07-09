@@ -10,7 +10,7 @@ public class ShootBullet : MonoBehaviour
     [SerializeField] GameObject tankBarrel;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] AudioClip clip;
-    [SerializeField] float bulletSpeed = 6000;
+    [SerializeField] float bulletSpeed = 8000;
     [SerializeField] float shotArmTime = 0.5f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;

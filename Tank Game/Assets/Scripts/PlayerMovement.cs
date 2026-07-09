@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
+
     [SerializeField] GameObject tank;
     [SerializeField] SelectionHandler selectionHandler;
     //[SerializeField] AudioSource moveSound;
@@ -10,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float speed = 50f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
-    
+    public TanksTypes TankType;
     
     Vector3 targetPos;
     float posStep;
@@ -25,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
         targetDirection = targetPos - tank.transform.position;
         targetDirection.y = 0f;
 
-        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 5f && (Mathf.Abs(targetDirection.x) > 2f && Mathf.Abs(targetDirection.z) > 2f))
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f && (Mathf.Abs(targetDirection.x) > 2f || Mathf.Abs(targetDirection.z) > 2f))
         {
             Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
             tank.transform.rotation = Quaternion.LookRotation(newDirection);

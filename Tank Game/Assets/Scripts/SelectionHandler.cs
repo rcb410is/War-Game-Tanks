@@ -1,13 +1,16 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class SelectionHandler : MonoBehaviour
 {
 
     static GameObject tank;
+    [SerializeField] SpawnInstance spawnInstance;
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] Transform radiusIndicator;
+    [SerializeField] Button shootButton;
     static bool isSelected;
     bool initialSelectionWasMade;
 
@@ -57,24 +60,24 @@ public class SelectionHandler : MonoBehaviour
             {
                 if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isSelected)
                 {
-                    isSelected = true;
                     //Debug.Log("Selected " + player);
+                    isSelected = true;
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
                 }
                 else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isSelected)
                 {
-                    isSelected = false;
                     //Debug.Log("Deselected " + player);
+                    isSelected = false;
                     selectionIndicator.position = new Vector3(0, -20, 0);
                     radiusIndicator.position = new Vector3(0, -30, 0);
                     pointer.position = new Vector3(0, -10, 0);
                 }
                 else if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Button"))
                 {
+                    //Debug.Log("Selected other tank");
                     isSelected = true;
                     tank = hit.collider.gameObject;
-                    //Debug.Log("Selected other tank");
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
                     pointer.position = new Vector3(0, -10, 0);
@@ -126,7 +129,24 @@ public class SelectionHandler : MonoBehaviour
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
             radiusIndicator.position = tank.transform.position;
         }
-    }
 
+        if (spawnInstance.IsSpawnActivated())
+        {
+            isSelected = false;
+            selectionIndicator.position = new Vector3(0, -20, 0);
+            radiusIndicator.position = new Vector3(0, -30, 0);
+            pointer.position = new Vector3(0, -10, 0);
+        }
+
+        if (!isSelected)
+        {
+            shootButton.interactable = false;
+        }
+        else
+        {
+            shootButton.interactable = true;
+        }
+
+    }
 
 }

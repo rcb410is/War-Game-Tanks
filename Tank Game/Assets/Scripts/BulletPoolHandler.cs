@@ -8,9 +8,9 @@ public class BulletPoolHandler : MonoBehaviour
     [SerializeField] Transform bulletsParent;
     public int poolSize = 20;
 
-    private static Queue<GameObject> pool = new();
+    static Queue<GameObject> pool = new();
 
-    private void Start()
+    void Start()
     {
         for (int i = 0; i < poolSize; i++)
         {
@@ -46,13 +46,5 @@ public class BulletPoolHandler : MonoBehaviour
         bullet.SetActive(false);
         pool.Enqueue(bullet);
     }
-
-    /*
-    private void OnCollisionEnter(Collision collision)
-    {
-        gameObject.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-        ReturnBullet(gameObject);
-    }
-    */
 
 }
