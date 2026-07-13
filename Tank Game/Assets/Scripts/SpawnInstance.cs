@@ -89,19 +89,31 @@ public class SpawnInstance : MonoBehaviour
                 var playerMovement = queuedTank.GetComponent<PlayerMovement>();
                 var tankType = playerMovement.TankType;
                 Debug.Log($"[{name}]: Pool count above 0 {tankType} {targetedSpawnType}");
-                if (tankType != targetedSpawnType)
+                int count = 0;
+                while (tankType != targetedSpawnType && count != pool.Count)
                 {
+                    //pool.Enqueue(queuedTank);
+                    //Debug.Log("Not a match, requeued tank");
                     pool.Enqueue(queuedTank);
-                    Debug.Log("Not a match, requeued tank");
+                    count++;
+                    pool.Dequeue();
+                    Debug.Log($"There is a tank of type {tank} in the pool");
 
+
+                }
+                if (tankType == targetedSpawnType)
+                {
+                    queuedTank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                    queuedTank.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
+                    queuedTank.SetActive(true);
                 }
                 else
                 {
                     var created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
                     created.transform.SetParent(tanksParent);
-                    queuedTank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
-                    queuedTank.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
-                    queuedTank.SetActive(true);
+                    created.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+                    created.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
+                    created.SetActive(true);
                 }
 
             }

@@ -106,6 +106,7 @@ MonoBehaviour:
   speed: 50
   rotMaxRad: 3
   rotMaxMag: 0.1
+  TankType: 0
   isMoving: 0
 --- !u!114 &9136255319937211586
 MonoBehaviour:
@@ -125,6 +126,7 @@ MonoBehaviour:
   tankBarrel: {fileID: 6865776459391976684}
   selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}
   clip: {fileID: 8300000, guid: 24f9e7232d4f9f544bf5d8d11ae45ced, type: 3}
+  UI: {fileID: 2926849720656244629, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
   bulletSpeed: 8000
   shotArmTime: 0.5
   rotMaxRad: 3

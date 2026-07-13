@@ -13,11 +13,11 @@ public class DamageHandler : MonoBehaviour
         if (collision.collider.CompareTag("Bullet"))
         {
             tankHealth--;
-            Debug.Log($"{tank.name} has {tankHealth}HP");
+            //Debug.Log($"{tank.name} has {tankHealth}HP");
         }
         if (tankHealth <= 0)
         {
-            Debug.Log($"{tank.name} was destroyed");
+            //Debug.Log($"{tank.name} was destroyed");
             tankHealth = 2;
             tank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             spawnInstance.GetComponentInChildren<SpawnInstance>().ReturnTank(tank);

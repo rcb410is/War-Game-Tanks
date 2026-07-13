@@ -60,14 +60,14 @@ public class SelectionHandler : MonoBehaviour
             {
                 if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isSelected)
                 {
-                    //Debug.Log("Selected " + player);
+                    //Debug.Log($"Selected {player}");
                     isSelected = true;
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
                 }
                 else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isSelected)
                 {
-                    //Debug.Log("Deselected " + player);
+                    //Debug.Log($"Deselected {player}");
                     isSelected = false;
                     selectionIndicator.position = new Vector3(0, -20, 0);
                     radiusIndicator.position = new Vector3(0, -30, 0);
@@ -113,7 +113,7 @@ public class SelectionHandler : MonoBehaviour
         {
             isSelected = SelectFirstTank();
         }
-        else if (tank.GetComponent<ShootBullet>().IsAimReady())
+        else if (tank.GetComponent<ShootBullet>().IsInShootMode())
         {
             radiusIndicator.position = new Vector3(0, -30, 0);
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
@@ -124,7 +124,7 @@ public class SelectionHandler : MonoBehaviour
             isSelected = SelectTank();
         }
 
-        if (isSelected && !tank.GetComponent<ShootBullet>().IsAimReady())
+        if (isSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
         {
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
             radiusIndicator.position = tank.transform.position;

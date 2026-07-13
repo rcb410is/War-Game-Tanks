@@ -71,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
 
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsAimReady())
+            if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsInShootMode())
             {
                 if (hit.collider.CompareTag("Ground") && isSelected && isCurrentTank)
                 {
