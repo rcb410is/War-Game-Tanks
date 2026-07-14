@@ -628,17 +628,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1026354994807231043, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2426416435022887056, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 2699503090086065921, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
       propertyPath: tanksParent
       value: 
       objectReference: {fileID: 553882973}
+    - target: {fileID: 2813934341553015601, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2926849720656244629, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 3173895905410684101, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4053225790621767534, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
       propertyPath: m_Name
       value: Shoot Toggle Notice (Text)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5055682967785595642, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 32
       objectReference: {fileID: 0}
     - target: {fileID: 8046984408824281475, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
       propertyPath: tanksParent
@@ -648,6 +668,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: 9122814418779456836, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
+      propertyPath: m_Name
+      value: Spawn Tank Notice (Legacy)
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
