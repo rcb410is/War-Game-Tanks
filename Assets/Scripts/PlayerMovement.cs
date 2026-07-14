@@ -1,141 +1,113 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerMovement : MonoBehaviour
 {
 
-    [SerializeField] Transform player;
-    [SerializeField] Transform point;
-    [SerializeField] Transform selectionIndicator;
-    [SerializeField] Transform radiusIndicator;
-    [SerializeField] Collider playerCol;
+    [SerializeField] GameObject tank;
+    [SerializeField] SelectionHandler selectionHandler;
+    //[SerializeField] AudioSource moveSound;
+
     [SerializeField] float speed = 50f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
-    [SerializeField] float yOffset = 0;
+    public TanksTypes TankType;
+    
     Vector3 targetPos;
     float posStep;
-    bool selected;
-    bool moving;
 
-    void Start()
+    bool isCurrentTank;
+    bool isSelected;
+    public bool isMoving;
+
+    //Rotates the tank towards a point
+    void Rotate(Vector3 targetDirection)
     {
-        point = Instantiate(point, new Vector3 (0,-40,0), Quaternion.identity);
-        selectionIndicator = Instantiate(selectionIndicator, new Vector3 (0, -45, 0), Quaternion.identity);
-        radiusIndicator = Instantiate(radiusIndicator, new Vector3 (0, -50, 0), Quaternion.identity);
-    }
+        targetDirection = targetPos - tank.transform.position;
+        targetDirection.y = 0f;
 
-    //Rotates the object towards a point
-    void Rotation(Vector3 targetDirection)
-    {
-        targetDirection = targetPos - player.position;
-        targetDirection.y = 0f; //targetDirection.y;
-
-        if (Quaternion.Angle(player.rotation, Quaternion.LookRotation(targetDirection)) > 5f && (Mathf.Abs(targetDirection.x) > 2f && Mathf.Abs(targetDirection.z) > 2f))
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f && (Mathf.Abs(targetDirection.x) > 2f || Mathf.Abs(targetDirection.z) > 2f))
         {
-            Vector3 newDirection = Vector3.RotateTowards(player.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
-            player.rotation = Quaternion.LookRotation(newDirection);
-            selectionIndicator.rotation = Quaternion.LookRotation(newDirection);
+            Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
+            tank.transform.rotation = Quaternion.LookRotation(newDirection);
         }
-
     }
 
-    //Moves the object towards a point
+    //Moves the tank towards a point
     void Move(Vector3 targetDirection)
     {
 
-        targetDirection = targetPos - player.position;
-        targetDirection.y = 0f; //player.position.y;
+        targetDirection = targetPos - tank.transform.position;
+        targetDirection.y = 0f;
 
-        if (Quaternion.Angle(player.rotation, Quaternion.LookRotation(targetDirection)) <= 5f)
+        if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) <= 5f)
         {
             posStep = speed * Time.deltaTime;
-            player.position = Vector3.MoveTowards(player.position, targetPos, posStep);
-            selectionIndicator.position = Vector3.MoveTowards(selectionIndicator.position, targetPos, posStep);
-            radiusIndicator.position = Vector3.MoveTowards(selectionIndicator.position, targetPos, posStep);
+            tank.transform.position = Vector3.MoveTowards(tank.transform.position, targetPos, posStep);
         }
 
     }
-
-    //Prevents from running into each other
-    private void OnCollisionEnter(Collision collision)
+    
+    //Prevents tanks from running into each other
+    void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag("Player"))
         {
-            moving = false;
+            isMoving = false;
+            tank.GetComponent<AudioSource>().Stop();
         }
     }
+    
 
     // Update is called once per frame
     void Update()
     {
-        
+        isSelected = selectionHandler.IsSelected();
+        isCurrentTank = tank == selectionHandler.GetPlayer();
+        //Debug.Log("Selected: " + selected);
+        //Debug.Log("This tank selected: " +  currentTank);
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-            //LayerMask layerMask = LayerMask.GetMask("UI");
 
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit/*, 500.0f, layerMask*/))
+            if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsInShootMode())
             {
-                if (hit.collider.Equals(playerCol) && !selected) {
-                    selected = true;
-                    //Debug.Log("Selected " + player);
-                    selectionIndicator.position = player.position;
-                    radiusIndicator.position = player.position;
-                }
-                else if (hit.collider.Equals(playerCol) && selected)
-                {
-                    selected = false;
-                    //Debug.Log("Deselected " + player);
-                    selectionIndicator.position = new Vector3 (0, -20, 0);
-                    radiusIndicator.position = new Vector3(0, -30, 0);
-                    point.position = new Vector3 (0, -10, 0);
-                }
-                else if (hit.collider.CompareTag("Player"))
-                {
-                    selected = false;
-                    //Debug.Log("Selected other tank");
-                    selectionIndicator.position = new Vector3 (0, -20, 0);
-                    radiusIndicator.position = new Vector3(0, -30, 0);
-                    point.position = new Vector3(0, -10, 0);
-                }
-                else
-                {
-                    //Debug.Log("Did Not Select");
-                }
-
-                if (hit.collider.CompareTag("Ground") && selected)
+                if (hit.collider.CompareTag("Ground") && isSelected && isCurrentTank)
                 {
                     targetPos = hit.point;
-                    point.position = targetPos;
-                    moving = true;
+                    isMoving = true;
                 }
-
             }
-
         }
 
-        Vector3 targetDirection = targetPos - player.position;
+    }
+
+    private void FixedUpdate()
+    {
+        Vector3 targetDirection = targetPos - tank.transform.position;
         float targetRadius = Mathf.Sqrt(Mathf.Pow(targetDirection.x, 2) + Mathf.Pow(targetDirection.z, 2));
-        if (selected && targetRadius <= 50)
+        if (targetRadius <= 50)
         {
-            if (moving)
+            if (isMoving)
             {
-                Rotation(targetDirection);
+                Rotate(targetDirection);
                 Move(targetDirection);
-                Debug.Log("Rotating... " + player.transform.position + " " + targetPos + " " + targetDirection);
+                //Debug.Log("Rotating... " + player.transform.position + " " + targetPos + " " + targetDirection);
+            }
+            if (isMoving && /*moveSound.isPlaying*/!tank.GetComponent<AudioSource>().isPlaying)
+            {
+                tank.GetComponent<AudioSource>().Play();
+                //moveSound.Play();
             }
 
         }
         if (Mathf.Abs(targetDirection.x) < 2f && Mathf.Abs(targetDirection.z) < 2f)
         {
-            moving = false;
+            tank.GetComponent<AudioSource>().Stop();
+            //moveSound.Stop();
+            isMoving = false;
         }
-
     }
 
 }
