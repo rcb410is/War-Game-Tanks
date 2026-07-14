@@ -23,6 +23,7 @@ public class BulletCollision : MonoBehaviour
         bulletModel.GetComponent<MeshRenderer>().enabled = false;
         bullet.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
         bullet.GetComponent<Collider>().enabled = false;
-        Invoke("RemoveBullet", 2f);
+        Invoke(nameof(RemoveBullet), 2f);
     }
+
 }

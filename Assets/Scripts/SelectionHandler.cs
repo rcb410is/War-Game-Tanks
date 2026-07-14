@@ -10,6 +10,8 @@ public class SelectionHandler : MonoBehaviour
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] Transform radiusIndicator;
+    [SerializeField] Transform tankDeadZone;
+    [SerializeField] Transform indicatorsParent;
     [SerializeField] Button shootButton;
     static bool isSelected;
     bool initialSelectionWasMade;
@@ -20,13 +22,13 @@ public class SelectionHandler : MonoBehaviour
         pointer = Instantiate(pointer, new Vector3(0, -40, 0), Quaternion.identity);
         selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
         radiusIndicator = Instantiate(radiusIndicator, new Vector3(0, -50, 0), Quaternion.identity);
+        tankDeadZone = Instantiate(tankDeadZone, new Vector3(0,-55, 0), Quaternion.identity);
+        pointer.SetParent(indicatorsParent.transform);
+        radiusIndicator.SetParent(indicatorsParent.transform);
+        selectionIndicator.SetParent(indicatorsParent.transform);
+        tankDeadZone.SetParent(indicatorsParent.transform);
+
     }
-
-    public Transform GetPoint() { return pointer; }
-
-    public Transform GetSelectionIndicator() { return selectionIndicator; }
-
-    public Transform GetRadiusIndicator() { return radiusIndicator; }
 
     public GameObject GetPlayer() { return tank; }
 
@@ -76,6 +78,7 @@ public class SelectionHandler : MonoBehaviour
                 else if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Button"))
                 {
                     //Debug.Log("Selected other tank");
+                    //Debug.Log($"Selected {hit.collider.name}");
                     isSelected = true;
                     tank = hit.collider.gameObject;
                     selectionIndicator.position = tank.transform.position;
@@ -102,7 +105,7 @@ public class SelectionHandler : MonoBehaviour
 
         if (Physics.Raycast(rayOrigin, out RaycastHit hit))
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame && hit.collider.CompareTag("Ground") && isSelected)
+            if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isSelected)
             {
                 pointer.position = hit.point;
             }
@@ -117,6 +120,7 @@ public class SelectionHandler : MonoBehaviour
         {
             radiusIndicator.position = new Vector3(0, -30, 0);
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
+            tankDeadZone.position = tank.transform.position;
             //Debug.Log("Can't select, tank is in shoot mode");
         }
         else
@@ -128,6 +132,7 @@ public class SelectionHandler : MonoBehaviour
         {
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
             radiusIndicator.position = tank.transform.position;
+            tankDeadZone.position = new Vector3(0, -55, 0);
         }
 
         if (spawnInstance.IsSpawnActivated())

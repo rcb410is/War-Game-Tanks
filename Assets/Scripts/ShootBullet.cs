@@ -10,18 +10,17 @@ public class ShootBullet : MonoBehaviour
     [SerializeField] GameObject tankBarrel;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] AudioClip clip;
-    //[SerializeField] Button shootButton;
-    [SerializeField] GameObject UI;
     [SerializeField] float bulletSpeed = 8000;
     [SerializeField] float shotArmTime = 0.5f;
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
+    [SerializeField] bool canShootTeammates;
     public GameObject bullet;
     public static Text buttonText;
     public static bool isSelected;
     public static bool isInShootMode;
     public static bool isAimReady;
-    public static bool canInteractWithButtons;
+    public static bool isCurrentlyShooting;
     bool isCurrentTank;
     bool isShotReady;
     bool isRotating;
@@ -32,12 +31,15 @@ public class ShootBullet : MonoBehaviour
 
     public bool IsInShootMode() {  return isInShootMode; }
 
-    public bool CanInteractWithButtons() { return canInteractWithButtons; }
+    public bool IsCurrentlyShooting() { return isCurrentlyShooting; }
 
     public void ReadyAim()
     {
-        isAimReady = !isAimReady;
-        isInShootMode = !isInShootMode;
+        if (!IsCurrentlyShooting())
+        {
+            isAimReady = !isAimReady;
+            isInShootMode = !isInShootMode;
+        }
     }
 
     public void AssignText(Text currentButtonText)
@@ -78,7 +80,8 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
+        Debug.Log($"Hit: {hit.collider.name}, Current tank: {tank.name}");
+        if (((hit.collider.CompareTag("Player") || hit.collider.CompareTag("PlayerDeadZone")) && ((hit.collider.name != tank.name) || canShootTeammates)) || hit.collider.CompareTag("Ground"))
         {
             targetAim = targetPos - tankBarrel.transform.position;
             bullet = bulletPoolHandler.GetComponent<BulletPoolHandler>().GetBullet();
@@ -88,12 +91,7 @@ public class ShootBullet : MonoBehaviour
             var particle = tank.GetComponent<ParticleSystem>();
             particle.Play();
             isAimReady = true;
-            //shootButton.interactable = true;
-            /*Button[] buttons = UI.GetComponentsInChildren<Button>();
-            foreach (Button button in buttons)
-            {
-                button.enabled = true;
-            }*/
+            isCurrentlyShooting = false;
             tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
             tank.GetComponent<PlayerMovement>().enabled = true;
         }
@@ -105,19 +103,21 @@ public class ShootBullet : MonoBehaviour
     {
         isSelected = selectionHandler.IsSelected();
         isCurrentTank = tank == selectionHandler.GetPlayer();
+
         if (!isSelected && isAimReady)
         {
             isAimReady = false;
             buttonText.text = "SHOOT";
             tank.GetComponent<PlayerMovement>().enabled = true;
         }
+
         if (Mouse.current.leftButton.wasPressedThisFrame && isAimReady && isCurrentTank && !isRotating && !isShotReady)
         {
             Vector2 mousePos = Mouse.current.position.ReadValue();
             Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
             Physics.Raycast(rayOrigin, out hit);
 
-            if ((hit.collider.CompareTag("Player") && hit.collider.name != tank.name) || hit.collider.CompareTag("Ground"))
+            if ((hit.collider.CompareTag("Player") && ((hit.collider.name != tank.name) || canShootTeammates)) || hit.collider.CompareTag("Ground"))
             {
                 targetPos = hit.point;
                 targetDirection = targetPos - tankBarrel.transform.position;
@@ -133,12 +133,7 @@ public class ShootBullet : MonoBehaviour
     {
         if (isRotating && isSelected && isCurrentTank)
         {
-            //shootButton.interactable = false;
-            /*Button[] buttons = UI.GetComponentsInChildren<Button>();
-            foreach (Button button in buttons)
-            {
-                button.enabled = false;
-            }*/
+            isCurrentlyShooting = true;
             Rotation(targetDirection);
             if (isRotating == false)
             {
@@ -149,10 +144,11 @@ public class ShootBullet : MonoBehaviour
 
         if (isShotReady && isSelected && isCurrentTank)
         {
-            Invoke("Shoot", shotArmTime);
+            Invoke(nameof(Shoot), shotArmTime);
             isShotReady = false;
             isAimReady = false;
         }
+
         if (!isCurrentTank && !isSelected)
         {
             isRotating = false;

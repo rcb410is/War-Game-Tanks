@@ -6,13 +6,15 @@ public enum TanksTypes
 {
     _9TP, _KV2
 }
+
 public class SpawnInstance : MonoBehaviour
 {
 
     public static GameObject tank;
-    public static GameObject selectionIndicator;
-    
+
+    [SerializeField] GameObject selectionIndicator;
     [SerializeField] Transform tanksParent;
+    [SerializeField] Transform indicatorsParent;
     [SerializeField] Button spawnButton;
     [SerializeField] TanksTypes targetedSpawnType;
     public static Text buttonText;
@@ -22,19 +24,11 @@ public class SpawnInstance : MonoBehaviour
 
     static Queue<GameObject> pool = new();
 
-    /*
-    void Start()
+     void Start()
     {
-        for (int i = 0; i < poolSize; i++)
-        {
-            //GameObject created = Instantiate(tank, selectionIndicator.transform.position, Quaternion.identity);
-            GameObject created = Instantiate(tank);
-            created.transform.SetParent(tanksParent.transform);
-            created.SetActive(false);
-            pool.Enqueue(created);
-        }
+        selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
+        selectionIndicator.transform.SetParent(indicatorsParent);
     }
-    */
 
     public void ReturnTank(GameObject tank)
     {
@@ -47,20 +41,22 @@ public class SpawnInstance : MonoBehaviour
     public void SpawnTank(GameObject newTank)
     {
         tank = newTank;
-        isSpawnActivated = true;
-        canInteractWithButtons = false;
-    }
-
-    public void SpawnSelection(GameObject newSelectionIndicator)
-    {
-        selectionIndicator = newSelectionIndicator;
-        selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
+        if (!tank.GetComponent<ShootBullet>().IsInShootMode())
+        {
+            isSpawnActivated = true;
+            canInteractWithButtons = false;
+        }
+        
     }
 
     public void AssignText(Text currentButtonText)
     {
-        buttonText = currentButtonText;
-        buttonText.text = "Click to confirm";
+        if (!tank.GetComponent<ShootBullet>().IsInShootMode())
+        {
+            buttonText = currentButtonText;
+            buttonText.text = "Click to confirm";
+        }
+        
     }
 
     void Update()
@@ -98,8 +94,6 @@ public class SpawnInstance : MonoBehaviour
                     count++;
                     pool.Dequeue();
                     Debug.Log($"There is a tank of type {tank} in the pool");
-
-
                 }
                 if (tankType == targetedSpawnType)
                 {
@@ -128,6 +122,10 @@ public class SpawnInstance : MonoBehaviour
             isSpawnActivated = false;
             canInteractWithButtons = true;
             buttonText.text = tank.name;
+        }
+
+        if (!isSpawnActivated)
+        {
             selectionIndicator.transform.position = new Vector3(0, -45, 0);
         }
 

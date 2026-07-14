@@ -361,13 +361,14 @@ MonoBehaviour:
   bulletPoolHandler: {fileID: 526884149692617139, guid: 33769d393b43440409d1d81034a4e9b8, type: 3}
   tank: {fileID: 3534477722296747307}
   tankBarrel: {fileID: 5562148165746662146}
+  tankDeadZone: {fileID: 540066703731201771, guid: f40d4e1d27a8bd4418052d532daed848, type: 3}
   selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}
   clip: {fileID: 8300000, guid: 24f9e7232d4f9f544bf5d8d11ae45ced, type: 3}
-  UI: {fileID: 2926849720656244629, guid: e62154c1a37d4c840a91f661a160bb1c, type: 3}
   bulletSpeed: 8000
   shotArmTime: 0.5
   rotMaxRad: 3
   rotMaxMag: 0.1
+  canShootTeammates: 0
   bullet: {fileID: 5713787573138977129, guid: 119eb99141b8d9341b36d8bfc583d018, type: 3}
 --- !u!114 &-7309073134297468144
 MonoBehaviour:

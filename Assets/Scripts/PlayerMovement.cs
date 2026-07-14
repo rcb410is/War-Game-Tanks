@@ -6,7 +6,6 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] GameObject tank;
     [SerializeField] SelectionHandler selectionHandler;
-    //[SerializeField] AudioSource moveSound;
 
     [SerializeField] float speed = 50f;
     [SerializeField] float rotMaxRad = 3.0f;
@@ -36,7 +35,6 @@ public class PlayerMovement : MonoBehaviour
     //Moves the tank towards a point
     void Move(Vector3 targetDirection)
     {
-
         targetDirection = targetPos - tank.transform.position;
         targetDirection.y = 0f;
 
@@ -73,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsInShootMode())
             {
-                if (hit.collider.CompareTag("Ground") && isSelected && isCurrentTank)
+                if ((hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isSelected && isCurrentTank)
                 {
                     targetPos = hit.point;
                     isMoving = true;
@@ -95,17 +93,15 @@ public class PlayerMovement : MonoBehaviour
                 Move(targetDirection);
                 //Debug.Log("Rotating... " + player.transform.position + " " + targetPos + " " + targetDirection);
             }
-            if (isMoving && /*moveSound.isPlaying*/!tank.GetComponent<AudioSource>().isPlaying)
+            if (isMoving && !tank.GetComponent<AudioSource>().isPlaying)
             {
                 tank.GetComponent<AudioSource>().Play();
-                //moveSound.Play();
             }
 
         }
         if (Mathf.Abs(targetDirection.x) < 2f && Mathf.Abs(targetDirection.z) < 2f)
         {
             tank.GetComponent<AudioSource>().Stop();
-            //moveSound.Stop();
             isMoving = false;
         }
     }

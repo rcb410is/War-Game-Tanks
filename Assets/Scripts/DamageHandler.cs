@@ -13,7 +13,7 @@ public class DamageHandler : MonoBehaviour
         if (collision.collider.CompareTag("Bullet"))
         {
             tankHealth--;
-            //Debug.Log($"{tank.name} has {tankHealth}HP");
+            Debug.Log($"{tank.name} has {tankHealth}HP");
         }
         if (tankHealth <= 0)
         {
@@ -23,6 +23,7 @@ public class DamageHandler : MonoBehaviour
             spawnInstance.GetComponentInChildren<SpawnInstance>().ReturnTank(tank);
             //tank.GetComponent<Rigidbody>().AddForce(0, 20000, 0);
         }
+
     }
 
 }
