@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerMovement : MonoBehaviour
 {
 
     [SerializeField] GameObject tank;
     [SerializeField] SelectionHandler selectionHandler;
+    [SerializeField] MouseControl mouseControl;
 
     [SerializeField] float speed = 50f;
     [SerializeField] float rotMaxRad = 3.0f;
@@ -62,14 +64,13 @@ public class PlayerMovement : MonoBehaviour
     {
         isSelected = selectionHandler.IsSelected();
         isCurrentTank = tank == selectionHandler.GetPlayer();
-        //Debug.Log("Selected: " + selected);
-        //Debug.Log("This tank selected: " +  currentTank);
+        //Debug.Log("Selected: " + isSelected);
+        //Debug.Log("This tank selected: " +  isCurrentTank);
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
+            RaycastHit hit = mouseControl.GetHitOnce();
 
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit) && !tank.GetComponent<ShootBullet>().IsInShootMode())
+            if (!tank.GetComponent<ShootBullet>().IsInShootMode())
             {
                 if ((hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isSelected && isCurrentTank)
                 {

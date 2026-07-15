@@ -7,14 +7,17 @@ public class SelectionHandler : MonoBehaviour
 
     static GameObject tank;
     [SerializeField] SpawnInstance spawnInstance;
+    [SerializeField] MouseControl mouseControl;
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] Transform radiusIndicator;
     [SerializeField] Transform tankDeadZone;
     [SerializeField] Transform indicatorsParent;
     [SerializeField] Button shootButton;
-    static bool isSelected;
+    static bool isAnyTankSelected;
     bool initialSelectionWasMade;
+    bool didRaycastHit;
+    RaycastHit hit;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -32,45 +35,39 @@ public class SelectionHandler : MonoBehaviour
 
     public GameObject GetPlayer() { return tank; }
 
-    public bool IsSelected() { return isSelected; }
+    public bool IsSelected() { return isAnyTankSelected; }
     
     public bool SelectFirstTank()
     {
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-        Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-
-        if (Physics.Raycast(rayOrigin, out RaycastHit hit) && Mouse.current.leftButton.wasPressedThisFrame)
+        if (didRaycastHit && Mouse.current.leftButton.wasPressedThisFrame)
         {
             if (hit.collider.CompareTag("Player")) {
                 tank = hit.collider.gameObject;
                 initialSelectionWasMade = true;
-                isSelected = true;
+                isAnyTankSelected = true;
                 //Debug.Log("First tank selected");
             }
         }
-        return isSelected;
+        return isAnyTankSelected;
     }
 
     bool SelectTank()
     {
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-
-            if (Physics.Raycast(rayOrigin, out RaycastHit hit))
+            if (didRaycastHit)
             {
-                if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isSelected)
+                if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isAnyTankSelected)
                 {
                     //Debug.Log($"Selected {player}");
-                    isSelected = true;
+                    isAnyTankSelected = true;
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
                 }
-                else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isSelected)
+                else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isAnyTankSelected)
                 {
                     //Debug.Log($"Deselected {player}");
-                    isSelected = false;
+                    isAnyTankSelected = false;
                     selectionIndicator.position = new Vector3(0, -20, 0);
                     radiusIndicator.position = new Vector3(0, -30, 0);
                     pointer.position = new Vector3(0, -10, 0);
@@ -79,7 +76,7 @@ public class SelectionHandler : MonoBehaviour
                 {
                     //Debug.Log("Selected other tank");
                     //Debug.Log($"Selected {hit.collider.name}");
-                    isSelected = true;
+                    isAnyTankSelected = true;
                     tank = hit.collider.gameObject;
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
@@ -93,19 +90,19 @@ public class SelectionHandler : MonoBehaviour
             }
 
         }
-        return isSelected;
+        return isAnyTankSelected;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-        Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
+        hit = mouseControl.GetHit();
+        didRaycastHit = mouseControl.DidRaycastHit();
 
-        if (Physics.Raycast(rayOrigin, out RaycastHit hit))
+        if (didRaycastHit)
         {
-            if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isSelected)
+            if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isAnyTankSelected)
             {
                 pointer.position = hit.point;
             }
@@ -114,7 +111,7 @@ public class SelectionHandler : MonoBehaviour
 
         if (!initialSelectionWasMade)
         {
-            isSelected = SelectFirstTank();
+            isAnyTankSelected = SelectFirstTank();
         }
         else if (tank.GetComponent<ShootBullet>().IsInShootMode())
         {
@@ -125,10 +122,10 @@ public class SelectionHandler : MonoBehaviour
         }
         else
         {
-            isSelected = SelectTank();
+            isAnyTankSelected = SelectTank();
         }
 
-        if (isSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
+        if (isAnyTankSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
         {
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
             radiusIndicator.position = tank.transform.position;
@@ -137,13 +134,13 @@ public class SelectionHandler : MonoBehaviour
 
         if (spawnInstance.IsSpawnActivated())
         {
-            isSelected = false;
+            isAnyTankSelected = false;
             selectionIndicator.position = new Vector3(0, -20, 0);
             radiusIndicator.position = new Vector3(0, -30, 0);
             pointer.position = new Vector3(0, -10, 0);
         }
 
-        if (!isSelected)
+        if (!isAnyTankSelected)
         {
             shootButton.interactable = false;
         }

@@ -6,6 +6,7 @@ public class ShootBullet : MonoBehaviour
 {
     [SerializeField] SelectionHandler selectionHandler;
     [SerializeField] BulletPoolHandler bulletPoolHandler;
+    [SerializeField] MouseControl mouseControl;
     [SerializeField] GameObject tank;
     [SerializeField] GameObject tankBarrel;
     [SerializeField] Transform selectionIndicator;
@@ -17,10 +18,10 @@ public class ShootBullet : MonoBehaviour
     [SerializeField] bool canShootTeammates;
     public GameObject bullet;
     public static Text buttonText;
-    public static bool isSelected;
-    public static bool isInShootMode;
-    public static bool isAimReady;
-    public static bool isCurrentlyShooting;
+    public static bool isAnyTankSelected;
+    public static bool isAnyTankInShootMode;
+    public static bool isAnyTanksAimReady;
+    public static bool isAnyTankCurrentlyShooting;
     bool isCurrentTank;
     bool isShotReady;
     bool isRotating;
@@ -29,16 +30,16 @@ public class ShootBullet : MonoBehaviour
     Vector3 targetAim;
     RaycastHit hit;
 
-    public bool IsInShootMode() {  return isInShootMode; }
+    public bool IsInShootMode() {  return isAnyTankInShootMode; }
 
-    public bool IsCurrentlyShooting() { return isCurrentlyShooting; }
+    public bool IsCurrentlyShooting() { return isAnyTankCurrentlyShooting; }
 
     public void ReadyAim()
     {
         if (!IsCurrentlyShooting())
         {
-            isAimReady = !isAimReady;
-            isInShootMode = !isInShootMode;
+            isAnyTanksAimReady = !isAnyTanksAimReady;
+            isAnyTankInShootMode = !isAnyTankInShootMode;
         }
     }
 
@@ -90,8 +91,8 @@ public class ShootBullet : MonoBehaviour
             bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
             var particle = tank.GetComponent<ParticleSystem>();
             particle.Play();
-            isAimReady = true;
-            isCurrentlyShooting = false;
+            isAnyTanksAimReady = true;
+            isAnyTankCurrentlyShooting = false;
             tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
             tank.GetComponent<PlayerMovement>().enabled = true;
         }
@@ -101,21 +102,20 @@ public class ShootBullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isSelected = selectionHandler.IsSelected();
+        isAnyTankSelected = selectionHandler.IsSelected();
         isCurrentTank = tank == selectionHandler.GetPlayer();
 
-        if (!isSelected && isAimReady)
+        if (!isAnyTankSelected && isAnyTanksAimReady)
         {
-            isAimReady = false;
+            isAnyTanksAimReady = false;
             buttonText.text = "SHOOT";
             tank.GetComponent<PlayerMovement>().enabled = true;
         }
 
-        if (Mouse.current.leftButton.wasPressedThisFrame && isAimReady && isCurrentTank && !isRotating && !isShotReady)
+        if (Mouse.current.leftButton.wasPressedThisFrame && isAnyTanksAimReady && isCurrentTank && !isRotating && !isShotReady)
         {
-            Vector2 mousePos = Mouse.current.position.ReadValue();
-            Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-            Physics.Raycast(rayOrigin, out hit);
+            hit = mouseControl.GetHitOnce();
+            Debug.Log($"{hit.collider} was hit");
 
             if ((hit.collider.CompareTag("Player") && ((hit.collider.name != tank.name) || canShootTeammates)) || hit.collider.CompareTag("Ground"))
             {
@@ -131,9 +131,9 @@ public class ShootBullet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isRotating && isSelected && isCurrentTank)
+        if (isRotating && isAnyTankSelected && isCurrentTank)
         {
-            isCurrentlyShooting = true;
+            isAnyTankCurrentlyShooting = true;
             Rotation(targetDirection);
             if (isRotating == false)
             {
@@ -142,18 +142,18 @@ public class ShootBullet : MonoBehaviour
 
         }
 
-        if (isShotReady && isSelected && isCurrentTank)
+        if (isShotReady && isAnyTankSelected && isCurrentTank)
         {
             Invoke(nameof(Shoot), shotArmTime);
             isShotReady = false;
-            isAimReady = false;
+            isAnyTanksAimReady = false;
         }
 
-        if (!isCurrentTank && !isSelected)
+        if (!isCurrentTank && !isAnyTankSelected)
         {
             isRotating = false;
             isShotReady = false;
-            isAimReady = false;
+            isAnyTanksAimReady = false;
             tank.GetComponent<PlayerMovement>().enabled = true;
         }
 

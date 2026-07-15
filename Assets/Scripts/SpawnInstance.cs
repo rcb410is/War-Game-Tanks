@@ -12,6 +12,7 @@ public class SpawnInstance : MonoBehaviour
 
     public static GameObject tank;
 
+    [SerializeField] MouseControl mouseControl;
     [SerializeField] GameObject selectionIndicator;
     [SerializeField] Transform tanksParent;
     [SerializeField] Transform indicatorsParent;
@@ -70,9 +71,9 @@ public class SpawnInstance : MonoBehaviour
             spawnButton.interactable = canInteractWithButtons;
         }
 
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-        Ray rayOrigin = Camera.main.ScreenPointToRay(mousePos);
-        if (Physics.Raycast(rayOrigin, out RaycastHit hit) && hit.collider.CompareTag("Ground") && isSpawnActivated)
+        RaycastHit hit = mouseControl.GetHit();
+        bool didRaycastHit = mouseControl.DidRaycastHit();
+        if (didRaycastHit && hit.collider.CompareTag("Ground") && isSpawnActivated)
         {
             selectionIndicator.transform.position = hit.point;
         }
