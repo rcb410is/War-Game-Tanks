@@ -13,6 +13,7 @@ public class SpawnInstance : MonoBehaviour
     public static GameObject tank;
 
     [SerializeField] MouseControl mouseControl;
+    [SerializeField] MultiplayerHandler multiplayerHandler;
     [SerializeField] GameObject selectionIndicator;
     [SerializeField] Transform tanksParent;
     [SerializeField] Transform indicatorsParent;

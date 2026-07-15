@@ -8,6 +8,7 @@ public class SelectionHandler : MonoBehaviour
     static GameObject tank;
     [SerializeField] SpawnInstance spawnInstance;
     [SerializeField] MouseControl mouseControl;
+    [SerializeField] MultiplayerHandler multiplayerHandler;
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
     [SerializeField] Transform radiusIndicator;
@@ -17,6 +18,7 @@ public class SelectionHandler : MonoBehaviour
     static bool isAnyTankSelected;
     bool initialSelectionWasMade;
     bool didRaycastHit;
+    string currentPlayerTag;
     RaycastHit hit;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -26,6 +28,7 @@ public class SelectionHandler : MonoBehaviour
         selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
         radiusIndicator = Instantiate(radiusIndicator, new Vector3(0, -50, 0), Quaternion.identity);
         tankDeadZone = Instantiate(tankDeadZone, new Vector3(0,-55, 0), Quaternion.identity);
+
         pointer.SetParent(indicatorsParent.transform);
         radiusIndicator.SetParent(indicatorsParent.transform);
         selectionIndicator.SetParent(indicatorsParent.transform);
@@ -41,7 +44,7 @@ public class SelectionHandler : MonoBehaviour
     {
         if (didRaycastHit && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (hit.collider.CompareTag("Player")) {
+            if (hit.collider.CompareTag(currentPlayerTag/*"Player"*/)) {
                 tank = hit.collider.gameObject;
                 initialSelectionWasMade = true;
                 isAnyTankSelected = true;
@@ -57,14 +60,14 @@ public class SelectionHandler : MonoBehaviour
         {
             if (didRaycastHit)
             {
-                if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isAnyTankSelected)
+                if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isAnyTankSelected && hit.collider.CompareTag(currentPlayerTag))
                 {
                     //Debug.Log($"Selected {player}");
                     isAnyTankSelected = true;
                     selectionIndicator.position = tank.transform.position;
                     radiusIndicator.position = tank.transform.position;
                 }
-                else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isAnyTankSelected)
+                else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isAnyTankSelected && hit.collider.CompareTag(currentPlayerTag))
                 {
                     //Debug.Log($"Deselected {player}");
                     isAnyTankSelected = false;
@@ -72,7 +75,7 @@ public class SelectionHandler : MonoBehaviour
                     radiusIndicator.position = new Vector3(0, -30, 0);
                     pointer.position = new Vector3(0, -10, 0);
                 }
-                else if (hit.collider.CompareTag("Player") || hit.collider.CompareTag("Button"))
+                else if (hit.collider.CompareTag(currentPlayerTag) || hit.collider.CompareTag("Button"))
                 {
                     //Debug.Log("Selected other tank");
                     //Debug.Log($"Selected {hit.collider.name}");
@@ -100,13 +103,11 @@ public class SelectionHandler : MonoBehaviour
         hit = mouseControl.GetHit();
         didRaycastHit = mouseControl.DidRaycastHit();
 
-        if (didRaycastHit)
-        {
-            if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isAnyTankSelected)
-            {
-                pointer.position = hit.point;
-            }
+        currentPlayerTag = multiplayerHandler.GetCurrentPlayerTag();
 
+        if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isAnyTankSelected)
+        {
+            pointer.position = hit.point;
         }
 
         if (!initialSelectionWasMade)
@@ -138,6 +139,16 @@ public class SelectionHandler : MonoBehaviour
             selectionIndicator.position = new Vector3(0, -20, 0);
             radiusIndicator.position = new Vector3(0, -30, 0);
             pointer.position = new Vector3(0, -10, 0);
+        }
+        
+        if (initialSelectionWasMade)
+        {
+            if (tank.tag != currentPlayerTag)
+            {
+                isAnyTankSelected = false;
+                selectionIndicator.position = new Vector3(0, -20, 0);
+                radiusIndicator.position = new Vector3(0, -30, 0);
+            }
         }
 
         if (!isAnyTankSelected)

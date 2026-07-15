@@ -21,6 +21,7 @@ public class DamageHandler : MonoBehaviour
             tankHealth = 2;
             tank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
             spawnInstance.GetComponentInChildren<SpawnInstance>().ReturnTank(tank);
+            MultiplayerHandler.AddPlayerScore(tank.tag);
             //tank.GetComponent<Rigidbody>().AddForce(0, 20000, 0);
         }
 

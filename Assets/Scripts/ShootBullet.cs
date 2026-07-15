@@ -21,7 +21,7 @@ public class ShootBullet : MonoBehaviour
     public static bool isAnyTankSelected;
     public static bool isAnyTankInShootMode;
     public static bool isAnyTanksAimReady;
-    public static bool isAnyTankCurrentlyShooting;
+    public static bool isAnyTankShooting;
     bool isCurrentTank;
     bool isShotReady;
     bool isRotating;
@@ -32,7 +32,7 @@ public class ShootBullet : MonoBehaviour
 
     public bool IsInShootMode() {  return isAnyTankInShootMode; }
 
-    public bool IsCurrentlyShooting() { return isAnyTankCurrentlyShooting; }
+    public bool IsCurrentlyShooting() { return isAnyTankShooting; }
 
     public void ReadyAim()
     {
@@ -62,10 +62,11 @@ public class ShootBullet : MonoBehaviour
         {
             targetDirection = targetPos - tank.transform.position;
         }
-        else if (hit.collider.CompareTag("Player") && hit.collider.name != tank.name)
+        else if ((hit.collider.CompareTag("Player1") || hit.collider.CompareTag("Player2")) && hit.collider.name != tank.name)
         {
             targetDirection = hit.collider.transform.position - tank.transform.position;
         }
+
         if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f)
         {
             Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
@@ -81,21 +82,19 @@ public class ShootBullet : MonoBehaviour
 
     void Shoot()
     {
-        Debug.Log($"Hit: {hit.collider.name}, Current tank: {tank.name}");
-        if (((hit.collider.CompareTag("Player") || hit.collider.CompareTag("PlayerDeadZone")) && ((hit.collider.name != tank.name) || canShootTeammates)) || hit.collider.CompareTag("Ground"))
-        {
-            targetAim = targetPos - tankBarrel.transform.position;
-            bullet = bulletPoolHandler.GetComponent<BulletPoolHandler>().GetBullet();
-            bullet.transform.SetPositionAndRotation(tankBarrel.transform.position, tankBarrel.transform.rotation);
-            bullet.transform.forward = targetAim.normalized;
-            bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
-            var particle = tank.GetComponent<ParticleSystem>();
-            particle.Play();
-            isAnyTanksAimReady = true;
-            isAnyTankCurrentlyShooting = false;
-            tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
-            tank.GetComponent<PlayerMovement>().enabled = true;
-        }
+        targetAim = targetPos - tankBarrel.transform.position;
+        bullet = bulletPoolHandler.GetComponent<BulletPoolHandler>().GetBullet();
+        bullet.transform.SetPositionAndRotation(tankBarrel.transform.position, tankBarrel.transform.rotation);
+        bullet.transform.forward = targetAim.normalized;
+        bullet.GetComponent<Rigidbody>().AddForce(targetAim.normalized * bulletSpeed);
+        var particle = tank.GetComponent<ParticleSystem>();
+        particle.Play();
+        isAnyTanksAimReady = true;
+        isAnyTankShooting = false;
+        tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
+        tank.GetComponent<PlayerMovement>().enabled = true;
+        isAnyTankInShootMode = false;
+        MultiplayerHandler.UsedAction();
 
     }
 
@@ -115,9 +114,9 @@ public class ShootBullet : MonoBehaviour
         if (Mouse.current.leftButton.wasPressedThisFrame && isAnyTanksAimReady && isCurrentTank && !isRotating && !isShotReady)
         {
             hit = mouseControl.GetHitOnce();
-            Debug.Log($"{hit.collider} was hit");
 
-            if ((hit.collider.CompareTag("Player") && ((hit.collider.name != tank.name) || canShootTeammates)) || hit.collider.CompareTag("Ground"))
+            if (((hit.collider.CompareTag("Player1") || hit.collider.CompareTag("Player2")) && ((hit.collider.name != tank.name) || canShootTeammates)) 
+               || hit.collider.CompareTag("Ground"))
             {
                 targetPos = hit.point;
                 targetDirection = targetPos - tankBarrel.transform.position;
@@ -133,7 +132,7 @@ public class ShootBullet : MonoBehaviour
     {
         if (isRotating && isAnyTankSelected && isCurrentTank)
         {
-            isAnyTankCurrentlyShooting = true;
+            isAnyTankShooting = true;
             Rotation(targetDirection);
             if (isRotating == false)
             {

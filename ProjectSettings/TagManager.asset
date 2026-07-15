@@ -8,6 +8,8 @@ TagManager:
   - Button
   - Bullet
   - PlayerDeadZone
+  - Player1
+  - Player2
   layers:
   - Default
   - TransparentFX

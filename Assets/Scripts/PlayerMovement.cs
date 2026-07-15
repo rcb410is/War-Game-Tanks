@@ -13,7 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float rotMaxRad = 3.0f;
     [SerializeField] float rotMaxMag = 0.1f;
     public TanksTypes TankType;
-    
+
     Vector3 targetPos;
     float posStep;
 
@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
             Vector3 newDirection = Vector3.RotateTowards(tank.transform.forward, targetDirection, rotMaxRad * Time.deltaTime, rotMaxMag);
             tank.transform.rotation = Quaternion.LookRotation(newDirection);
         }
+
     }
 
     //Moves the tank towards a point
@@ -47,15 +48,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
-    
+
     //Prevents tanks from running into each other
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("Player"))
+        if (collision.collider.CompareTag("Player1") || collision.collider.CompareTag("Player2"))
         {
             isMoving = false;
             tank.GetComponent<AudioSource>().Stop();
         }
+
     }
     
 
@@ -76,6 +78,13 @@ public class PlayerMovement : MonoBehaviour
                 {
                     targetPos = hit.point;
                     isMoving = true;
+                    Vector3 targetDirection = targetPos - tank.transform.position;
+
+                    float targetRadius = Mathf.Sqrt(Mathf.Pow(targetDirection.x, 2) + Mathf.Pow(targetDirection.z, 2));
+                    if (targetRadius <= 50)
+                    {
+                        MultiplayerHandler.UsedAction();
+                    }         
                 }
             }
         }
@@ -105,6 +114,7 @@ public class PlayerMovement : MonoBehaviour
             tank.GetComponent<AudioSource>().Stop();
             isMoving = false;
         }
+
     }
 
 }
