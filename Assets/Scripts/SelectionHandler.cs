@@ -11,7 +11,8 @@ public class SelectionHandler : MonoBehaviour
     [SerializeField] MultiplayerHandler multiplayerHandler;
     [SerializeField] Transform pointer;
     [SerializeField] Transform selectionIndicator;
-    [SerializeField] Transform radiusIndicator;
+    [SerializeField] Transform moveRadiusIndicator;
+    [SerializeField] Transform shootRadiusIndicator;
     [SerializeField] Transform tankDeadZone;
     [SerializeField] Transform indicatorsParent;
     [SerializeField] Button shootButton;
@@ -26,11 +27,12 @@ public class SelectionHandler : MonoBehaviour
     {
         pointer = Instantiate(pointer, new Vector3(0, -40, 0), Quaternion.identity);
         selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
-        radiusIndicator = Instantiate(radiusIndicator, new Vector3(0, -50, 0), Quaternion.identity);
-        tankDeadZone = Instantiate(tankDeadZone, new Vector3(0,-55, 0), Quaternion.identity);
+        moveRadiusIndicator = Instantiate(moveRadiusIndicator, new Vector3(0, -50, 0), Quaternion.identity);
+        shootRadiusIndicator = Instantiate(shootRadiusIndicator, new Vector3(0, -55, 0), Quaternion.identity);
+        tankDeadZone = Instantiate(tankDeadZone, new Vector3(0,-60, 0), Quaternion.identity);
 
         pointer.SetParent(indicatorsParent.transform);
-        radiusIndicator.SetParent(indicatorsParent.transform);
+        moveRadiusIndicator.SetParent(indicatorsParent.transform);
         selectionIndicator.SetParent(indicatorsParent.transform);
         tankDeadZone.SetParent(indicatorsParent.transform);
 
@@ -38,7 +40,7 @@ public class SelectionHandler : MonoBehaviour
 
     public GameObject GetPlayer() { return tank; }
 
-    public bool IsSelected() { return isAnyTankSelected; }
+    public bool IsAnyTankSelected() { return isAnyTankSelected; }
     
     public bool SelectFirstTank()
     {
@@ -62,17 +64,17 @@ public class SelectionHandler : MonoBehaviour
             {
                 if (hit.collider.Equals(tank.GetComponent<Collider>()) && !isAnyTankSelected && hit.collider.CompareTag(currentPlayerTag))
                 {
-                    //Debug.Log($"Selected {player}");
+                    //Debug.Log($"Selected {tank}");
                     isAnyTankSelected = true;
                     selectionIndicator.position = tank.transform.position;
-                    radiusIndicator.position = tank.transform.position;
+                    moveRadiusIndicator.position = tank.transform.position;
                 }
                 else if (hit.collider.Equals(tank.GetComponent<Collider>()) && isAnyTankSelected && hit.collider.CompareTag(currentPlayerTag))
                 {
-                    //Debug.Log($"Deselected {player}");
+                    //Debug.Log($"Deselected {tank}");
                     isAnyTankSelected = false;
                     selectionIndicator.position = new Vector3(0, -20, 0);
-                    radiusIndicator.position = new Vector3(0, -30, 0);
+                    moveRadiusIndicator.position = new Vector3(0, -30, 0);
                     pointer.position = new Vector3(0, -10, 0);
                 }
                 else if (hit.collider.CompareTag(currentPlayerTag) || hit.collider.CompareTag("Button"))
@@ -82,7 +84,7 @@ public class SelectionHandler : MonoBehaviour
                     isAnyTankSelected = true;
                     tank = hit.collider.gameObject;
                     selectionIndicator.position = tank.transform.position;
-                    radiusIndicator.position = tank.transform.position;
+                    moveRadiusIndicator.position = tank.transform.position;
                     pointer.position = new Vector3(0, -10, 0);
                 }
                 else
@@ -105,7 +107,7 @@ public class SelectionHandler : MonoBehaviour
 
         currentPlayerTag = multiplayerHandler.GetCurrentPlayerTag();
 
-        if (Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isAnyTankSelected)
+        if (didRaycastHit && Mouse.current.leftButton.wasPressedThisFrame && (hit.collider.CompareTag("Ground") || hit.collider.CompareTag("PlayerDeadZone")) && isAnyTankSelected)
         {
             pointer.position = hit.point;
         }
@@ -116,8 +118,9 @@ public class SelectionHandler : MonoBehaviour
         }
         else if (tank.GetComponent<ShootBullet>().IsInShootMode())
         {
-            radiusIndicator.position = new Vector3(0, -30, 0);
+            moveRadiusIndicator.position = new Vector3(0, -30, 0);
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
+            shootRadiusIndicator.position = tank.transform.position;
             tankDeadZone.position = tank.transform.position;
             //Debug.Log("Can't select, tank is in shoot mode");
         }
@@ -129,15 +132,16 @@ public class SelectionHandler : MonoBehaviour
         if (isAnyTankSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
         {
             selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
-            radiusIndicator.position = tank.transform.position;
-            tankDeadZone.position = new Vector3(0, -55, 0);
+            moveRadiusIndicator.position = tank.transform.position;
+            shootRadiusIndicator.position = new Vector3(0, -55, 0);
+            tankDeadZone.position = new Vector3(0, -60, 0);
         }
 
         if (spawnInstance.IsSpawnActivated())
         {
             isAnyTankSelected = false;
             selectionIndicator.position = new Vector3(0, -20, 0);
-            radiusIndicator.position = new Vector3(0, -30, 0);
+            moveRadiusIndicator.position = new Vector3(0, -30, 0);
             pointer.position = new Vector3(0, -10, 0);
         }
         
@@ -147,7 +151,7 @@ public class SelectionHandler : MonoBehaviour
             {
                 isAnyTankSelected = false;
                 selectionIndicator.position = new Vector3(0, -20, 0);
-                radiusIndicator.position = new Vector3(0, -30, 0);
+                moveRadiusIndicator.position = new Vector3(0, -30, 0);
             }
         }
 

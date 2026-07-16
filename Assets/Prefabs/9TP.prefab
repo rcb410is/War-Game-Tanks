@@ -49,7 +49,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5027308773024532262}
   serializedVersion: 5
-  m_Mass: 4
+  m_Mass: 100
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -104,7 +104,6 @@ MonoBehaviour:
   tank: {fileID: 5027308773024532262}
   selectionHandler: {fileID: 3136386613465526120, guid: 4cfaef6b7dd07444db8861c9e388267d, type: 3}
   mouseControl: {fileID: 2906518722446608073, guid: f99f06ce81bc59740b7a6ca4b96eba40, type: 3}
-  multiplayerHandler: {fileID: 0}
   speed: 50
   rotMaxRad: 3
   rotMaxMag: 0.1
@@ -125,7 +124,6 @@ MonoBehaviour:
   selectionHandler: {fileID: 3136386613465526120, guid: 4cfaef6b7dd07444db8861c9e388267d, type: 3}
   bulletPoolHandler: {fileID: 526884149692617139, guid: 33769d393b43440409d1d81034a4e9b8, type: 3}
   mouseControl: {fileID: 2906518722446608073, guid: f99f06ce81bc59740b7a6ca4b96eba40, type: 3}
-  multiplayerHandler: {fileID: 2876879760632967398, guid: 2b12318eeec24454f9e6abde62233835, type: 3}
   tank: {fileID: 5027308773024532262}
   tankBarrel: {fileID: 6865776459391976684}
   selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}

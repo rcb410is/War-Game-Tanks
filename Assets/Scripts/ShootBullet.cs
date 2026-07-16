@@ -36,7 +36,11 @@ public class ShootBullet : MonoBehaviour
 
     public void ReadyAim()
     {
-        if (!IsCurrentlyShooting())
+        if (MultiplayerHandler.GetActionsRemaining() < 2)
+        {
+            return;
+        }
+        else if (!IsCurrentlyShooting())
         {
             isAnyTanksAimReady = !isAnyTanksAimReady;
             isAnyTankInShootMode = !isAnyTankInShootMode;
@@ -46,14 +50,23 @@ public class ShootBullet : MonoBehaviour
     public void AssignText(Text currentButtonText)
     {
         buttonText = currentButtonText;
-        if (buttonText.text == "SHOOT")
+        if (MultiplayerHandler.GetActionsRemaining() < 2)
         {
-            buttonText.text = "Click to shoot";
+            //buttonText.text = "Not enough actions";
+            return;
         }
         else
         {
-            buttonText.text = "SHOOT";
+            if (buttonText.text == "SHOOT")
+            {
+                buttonText.text = "Click to shoot";
+            }
+            else
+            {
+                buttonText.text = "SHOOT";
+            }
         }
+
     }
 
     void Rotation(Vector3 targetDirection)
@@ -93,16 +106,24 @@ public class ShootBullet : MonoBehaviour
         isAnyTankShooting = false;
         tankBarrel.GetComponent<AudioSource>().PlayOneShot(clip);
         tank.GetComponent<PlayerMovement>().enabled = true;
-        isAnyTankInShootMode = false;
-        MultiplayerHandler.UsedAction();
+        MultiplayerHandler.UsedAction("Shoot");
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        isAnyTankSelected = selectionHandler.IsSelected();
+        isAnyTankSelected = selectionHandler.IsAnyTankSelected();
         isCurrentTank = tank == selectionHandler.GetPlayer();
+
+        if (isAnyTanksAimReady && MultiplayerHandler.GetActionsRemaining() < 2)
+        {
+            Debug.Log("Not enough action points");
+            buttonText.text = "SHOOT";
+            tank.GetComponent<PlayerMovement>().enabled = true;
+            isAnyTanksAimReady = false;
+            isAnyTankInShootMode = false;
+        }
 
         if (!isAnyTankSelected && isAnyTanksAimReady)
         {
@@ -120,8 +141,13 @@ public class ShootBullet : MonoBehaviour
             {
                 targetPos = hit.point;
                 targetDirection = targetPos - tankBarrel.transform.position;
-                isRotating = true;
-                tank.GetComponent<PlayerMovement>().enabled = false;
+                Vector3 targetShootDirection = targetPos - tank.transform.position;
+                float targetRadius = Mathf.Sqrt(Mathf.Pow(targetShootDirection.x, 2) + Mathf.Pow(targetShootDirection.z, 2));
+                if (targetRadius <= 100)
+                {
+                    isRotating = true;
+                    tank.GetComponent<PlayerMovement>().enabled = false;
+                }
             }
                       
         }

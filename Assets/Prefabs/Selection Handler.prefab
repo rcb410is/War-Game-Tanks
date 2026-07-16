@@ -44,6 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e757e70a3600a434096ef6121fd7766d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SelectionHandler
+  spawnInstance: {fileID: 0}
+  mouseControl: {fileID: 0}
+  multiplayerHandler: {fileID: 0}
   pointer: {fileID: 7419418598261885694, guid: e3eb553baa91f694aa14691fd6746702, type: 3}
   selectionIndicator: {fileID: 7184416101926908432, guid: f7e0b2752bf370048889b643ddb4f9e0, type: 3}
-  radiusIndicator: {fileID: 8563436912117783394, guid: 6b176555846ec54448ca77ab34f39bbc, type: 3}
+  moveRadiusIndicator: {fileID: 8563436912117783394, guid: 6b176555846ec54448ca77ab34f39bbc, type: 3}
+  tankDeadZone: {fileID: 3999760532854782519, guid: f40d4e1d27a8bd4418052d532daed848, type: 3}
+  indicatorsParent: {fileID: 0}
+  shootButton: {fileID: 0}

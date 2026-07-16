@@ -14,6 +14,8 @@ public class SpawnInstance : MonoBehaviour
 
     [SerializeField] MouseControl mouseControl;
     [SerializeField] MultiplayerHandler multiplayerHandler;
+    [SerializeField] GameObject player1Tank;
+    [SerializeField] GameObject player2Tank;
     [SerializeField] GameObject selectionIndicator;
     [SerializeField] Transform tanksParent;
     [SerializeField] Transform indicatorsParent;
@@ -51,9 +53,36 @@ public class SpawnInstance : MonoBehaviour
         
     }
 
+    public void SpawnTeamTank()
+    {
+        if (MultiplayerHandler.GetActionsRemaining() < 3)
+        {
+            Debug.Log("Not enough action points");
+            return;
+        }
+        else if (multiplayerHandler.GetCurrentPlayerTag() == "Player1")
+        {
+            tank = player1Tank;
+            if (!tank.GetComponent<ShootBullet>().IsInShootMode())
+            {
+                isSpawnActivated = true;
+                canInteractWithButtons = false;
+            }
+        }
+        else if (multiplayerHandler.GetCurrentPlayerTag() == "Player2")
+        {
+            tank = player2Tank;
+            if (!tank.GetComponent<ShootBullet>().IsInShootMode())
+            {
+                isSpawnActivated = true;
+                canInteractWithButtons = false;
+            }
+        }
+    }
+
     public void AssignText(Text currentButtonText)
     {
-        if (!tank.GetComponent<ShootBullet>().IsInShootMode())
+        if (!tank.GetComponent<ShootBullet>().IsInShootMode() && MultiplayerHandler.GetActionsRemaining() >= 3)
         {
             buttonText = currentButtonText;
             buttonText.text = "Click to confirm";
@@ -102,6 +131,7 @@ public class SpawnInstance : MonoBehaviour
                     queuedTank.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                     queuedTank.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
                     queuedTank.SetActive(true);
+                    MultiplayerHandler.UsedAction("Deploy");
                 }
                 else
                 {
@@ -110,6 +140,7 @@ public class SpawnInstance : MonoBehaviour
                     created.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                     created.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
                     created.SetActive(true);
+                    MultiplayerHandler.UsedAction("Deploy");
                 }
 
             }
@@ -120,10 +151,12 @@ public class SpawnInstance : MonoBehaviour
                 created.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
                 created.transform.SetPositionAndRotation(selectionIndicator.transform.position, Quaternion.identity);
                 created.SetActive(true);
+                MultiplayerHandler.UsedAction("Deploy");
             }
             isSpawnActivated = false;
             canInteractWithButtons = true;
-            buttonText.text = tank.name;
+            //buttonText.text = tank.name;
+            buttonText.text = "DEPLOY TANK";
         }
 
         if (!isSpawnActivated)

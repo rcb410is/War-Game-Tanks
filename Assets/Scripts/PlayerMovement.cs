@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
     //Prevents tanks from running into each other
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.CompareTag("Player1") || collision.collider.CompareTag("Player2"))
+        if (collision.collider.CompareTag("Player1") || collision.collider.CompareTag("Player2") || collision.collider.CompareTag("Obstacle"))
         {
             isMoving = false;
             tank.GetComponent<AudioSource>().Stop();
@@ -64,13 +64,15 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        isSelected = selectionHandler.IsSelected();
+        isSelected = selectionHandler.IsAnyTankSelected();
         isCurrentTank = tank == selectionHandler.GetPlayer();
         //Debug.Log("Selected: " + isSelected);
-        //Debug.Log("This tank selected: " +  isCurrentTank);
+        //Debug.Log("This tank selected: " + isCurrentTank);
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
             RaycastHit hit = mouseControl.GetHitOnce();
+            bool didRaycastHit = mouseControl.DidRaycastHit();
+            //Debug.Log($"Is tank in shoot mode: {tank.GetComponent<ShootBullet>().IsInShootMode()}");
 
             if (!tank.GetComponent<ShootBullet>().IsInShootMode())
             {
@@ -83,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
                     float targetRadius = Mathf.Sqrt(Mathf.Pow(targetDirection.x, 2) + Mathf.Pow(targetDirection.z, 2));
                     if (targetRadius <= 50)
                     {
-                        MultiplayerHandler.UsedAction();
+                        MultiplayerHandler.UsedAction("Movement");
                     }         
                 }
             }
