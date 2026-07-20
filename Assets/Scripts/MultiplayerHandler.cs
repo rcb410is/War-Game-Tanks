@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MultiplayerHandler : MonoBehaviour
@@ -55,17 +56,17 @@ public class MultiplayerHandler : MonoBehaviour
         {
             player1Score++;
         }
-        
-        if (player1Score >= 5)
-        {
-            Debug.Log("Player 1 Wins!");
-        }
 
-        if (player2Score >= 5)
-        {
-            Debug.Log("Player 2 Wins!");
-        }
+    }
 
+    void RestartGame()
+    {
+        currentPlayerTag = "Player1";
+        player1Score = 0;
+        player2Score = 0;
+        actionsRemaining = 3;
+        playerWinsText.text = "";
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     // Update is called once per frame
@@ -96,12 +97,15 @@ public class MultiplayerHandler : MonoBehaviour
         if (player1Score >= 3)
         {
             playerWinsText.text = "Player 1 Wins!";
+            Invoke(nameof(RestartGame), 3);
         }
 
         if (player2Score >= 3)
         {
             playerWinsText.text = "Player 2 Wins!";
+            Invoke(nameof(RestartGame), 3);
         }
+
     }
 
 }

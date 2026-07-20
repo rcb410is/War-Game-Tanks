@@ -11,6 +11,8 @@ TagManager:
   - Player1
   - Player2
   - Obstacle
+  - ObjectPool
+  - UI
   layers:
   - Default
   - TransparentFX

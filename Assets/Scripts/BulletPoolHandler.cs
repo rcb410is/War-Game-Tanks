@@ -12,6 +12,13 @@ public class BulletPoolHandler : MonoBehaviour
 
     void Start()
     {
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("ObjectPool");
+
+        if (objs.Length > 1)
+        {
+            Destroy(gameObject);
+        }
+
         for (int i = 0; i < poolSize; i++)
         {
             GameObject bullet = Instantiate(bulletPrefab);
@@ -19,7 +26,8 @@ public class BulletPoolHandler : MonoBehaviour
             bullet.SetActive(false);
             pool.Enqueue(bullet);
         }
-        
+        DontDestroyOnLoad(bulletsParent);
+
     }
 
     public GameObject GetBullet()

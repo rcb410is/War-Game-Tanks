@@ -30,6 +30,8 @@ public class SpawnInstance : MonoBehaviour
 
      void Start()
     {
+        isSpawnActivated = false;
+        canInteractWithButtons = true;
         selectionIndicator = Instantiate(selectionIndicator, new Vector3(0, -45, 0), Quaternion.identity);
         selectionIndicator.transform.SetParent(indicatorsParent);
     }
@@ -110,12 +112,12 @@ public class SpawnInstance : MonoBehaviour
 
         if (isSpawnActivated && Mouse.current.leftButton.wasPressedThisFrame)
         {
-            if (pool.Count > 0)
+            if (pool.Count < 0) // Code under this if statement unused, reverse the less than symbol to reactivate pool related logic
             {
                 GameObject queuedTank = pool.Dequeue();
                 var playerMovement = queuedTank.GetComponent<PlayerMovement>();
                 var tankType = playerMovement.TankType;
-                Debug.Log($"[{name}]: Pool count above 0 {tankType} {targetedSpawnType}");
+                //Debug.Log($"[{name}]: Pool count above 0 {tankType} {targetedSpawnType}");
                 int count = 0;
                 while (tankType != targetedSpawnType && count != pool.Count)
                 {

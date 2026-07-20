@@ -34,6 +34,7 @@ public class SelectionHandler : MonoBehaviour
         pointer.SetParent(indicatorsParent.transform);
         moveRadiusIndicator.SetParent(indicatorsParent.transform);
         selectionIndicator.SetParent(indicatorsParent.transform);
+        shootRadiusIndicator.SetParent(indicatorsParent.transform);
         tankDeadZone.SetParent(indicatorsParent.transform);
 
     }
@@ -129,12 +130,15 @@ public class SelectionHandler : MonoBehaviour
             isAnyTankSelected = SelectTank();
         }
 
-        if (isAnyTankSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
+        if (tank != null)
         {
-            selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
-            moveRadiusIndicator.position = tank.transform.position;
-            shootRadiusIndicator.position = new Vector3(0, -55, 0);
-            tankDeadZone.position = new Vector3(0, -60, 0);
+            if (isAnyTankSelected && !tank.GetComponent<ShootBullet>().IsInShootMode())
+            {
+                selectionIndicator.SetPositionAndRotation(tank.transform.position, tank.transform.rotation);
+                moveRadiusIndicator.position = tank.transform.position;
+                shootRadiusIndicator.position = new Vector3(0, -55, 0);
+                tankDeadZone.position = new Vector3(0, -60, 0);
+            }
         }
 
         if (spawnInstance.IsSpawnActivated())

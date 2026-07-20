@@ -30,6 +30,14 @@ public class ShootBullet : MonoBehaviour
     Vector3 targetAim;
     RaycastHit hit;
 
+    private void Start()
+    {
+        isAnyTankSelected = false;
+        isAnyTankInShootMode = false;
+        isAnyTanksAimReady = false;
+        isAnyTankShooting = false;
+    }
+
     public bool IsInShootMode() {  return isAnyTankInShootMode; }
 
     public bool IsCurrentlyShooting() { return isAnyTankShooting; }
@@ -77,7 +85,7 @@ public class ShootBullet : MonoBehaviour
         }
         else if ((hit.collider.CompareTag("Player1") || hit.collider.CompareTag("Player2")) && hit.collider.name != tank.name)
         {
-            targetDirection = hit.collider.transform.position - tank.transform.position;
+            targetDirection = new Vector3(targetPos.x, hit.collider.transform.position.y, targetPos.z) - tank.transform.position;
         }
 
         if (Quaternion.Angle(tank.transform.rotation, Quaternion.LookRotation(targetDirection)) > 1f)
